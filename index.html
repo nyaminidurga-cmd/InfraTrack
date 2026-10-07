@@ -1,0 +1,1151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InfraTrack</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- =====================================================
+         LOGIN / SIGN UP
+    ====================================================== -->
+
+    <div id="authScreen" class="auth-screen">
+
+        <div class="auth-card">
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-icon">I</div>
+
+                <div>
+                    <h1>InfraTrack</h1>
+                    <p>Infrastructure Monitoring</p>
+                </div>
+
+            </div>
+
+            <h2 id="authTitle">Sign in</h2>
+
+            <p id="authSubtitle" class="page-description">
+                Sign in to see your projects.
+            </p>
+
+            <form id="authForm" class="auth-form">
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        id="authEmail"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        id="authPassword"
+                        autocomplete="current-password"
+                        minlength="6"
+                        placeholder="At least 6 characters"
+                        required
+                    >
+                </div>
+
+                <p id="authMessage" class="auth-message hidden"></p>
+
+                <button
+                    type="submit"
+                    id="authSubmit"
+                    class="primary-btn auth-submit"
+                >
+                    Sign in
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                <span id="authSwitchText">Don't have an account?</span>
+                <button
+                    type="button"
+                    id="authSwitchBtn"
+                    class="auth-link"
+                    onclick="toggleAuthMode()"
+                >
+                    Create one
+                </button>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">I</div>
+
+            <div>
+                <h1>InfraTrack</h1>
+                <p>Infrastructure Monitoring</p>
+            </div>
+        </div>
+
+
+        <nav class="navigation">
+
+            <button
+                class="nav-item active"
+                onclick="showPage('dashboardPage', this)"
+            >
+                <span>⌂</span>
+                Dashboard
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('createPage', this)"
+            >
+                <span>＋</span>
+                Create Project
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('projectsPage', this)"
+            >
+                <span>▣</span>
+                Projects
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-user">
+
+            <span
+                id="sidebarUserEmail"
+                class="sidebar-user-email"
+            ></span>
+
+            <button
+                class="logout-btn"
+                onclick="signOut()"
+            >
+                Log out
+            </button>
+
+        </div>
+
+        <div class="sidebar-bottom">
+            Infrastructure Project
+            <br>
+            Monitoring System
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             DASHBOARD PAGE
+        ================================================== -->
+
+        <section
+            id="dashboardPage"
+            class="page active-page"
+        >
+
+            <div class="page-header">
+
+                <div>
+                    <p class="eyebrow">PROJECT DASHBOARD</p>
+
+                    <h2 id="dashboardTitle">
+                        Dashboard
+                    </h2>
+
+                    <p
+                        id="dashboardSubtitle"
+                        class="page-description"
+                    >
+                        Select a project to view its dashboard.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- EMPTY DASHBOARD -->
+
+            <div
+                id="emptyDashboard"
+                class="empty-dashboard"
+            >
+
+                <div class="empty-icon-large">
+                    +
+                </div>
+
+                <h3>
+                    No project selected
+                </h3>
+
+                <p>
+                    Create a project first to view its
+                    infrastructure monitoring dashboard.
+                </p>
+
+                <button
+                    class="primary-btn"
+                    onclick="showPage('createPage')"
+                >
+                    + Create Project
+                </button>
+
+            </div>
+
+
+            <!-- PROJECT DASHBOARD -->
+
+            <div
+                id="projectDashboard"
+                class="hidden"
+            >
+
+                <!-- PROJECT INFORMATION -->
+
+                <div class="content-card">
+
+                    <div class="project-header">
+
+                        <div>
+
+                            <span
+                                id="dashboardProjectType"
+                                class="project-type"
+                            ></span>
+
+                            <h1 id="dashboardProjectName">
+                            </h1>
+
+                            <p
+                                id="dashboardProjectLocation"
+                                class="project-location"
+                            ></p>
+
+                        </div>
+
+                        <div class="project-header-right">
+
+                            <button
+                                class="secondary-btn small-btn"
+                                onclick="openEditProject(currentProjectId)"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="danger-btn small-btn"
+                                onclick="deleteProject(currentProjectId)"
+                            >
+                                Delete
+                            </button>
+
+                            <span
+                                id="dashboardStatus"
+                                class="status-badge neutral"
+                            >
+                                Not Started
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-info-grid">
+
+                        <div class="info-item">
+                            <span>Start Date</span>
+                            <strong id="dashboardStartDate">-</strong>
+                        </div>
+
+                        <div class="info-item">
+                            <span>End Date</span>
+                            <strong id="dashboardEndDate">-</strong>
+                        </div>
+
+                        <div class="info-item">
+                            <span>Total Planned Budget</span>
+                            <strong id="dashboardBudget">-</strong>
+                        </div>
+
+                        <div class="info-item">
+                            <span>Project Duration</span>
+                            <strong id="dashboardDuration">-</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="dashboardDescriptionBox"
+                        class="description-box hidden"
+                    >
+
+                        <span>Description</span>
+
+                        <p id="dashboardDescription"></p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PLANNING -->
+
+                <div class="content-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <p class="eyebrow">
+                                PROJECT PLANNING
+                            </p>
+
+                            <h2>
+                                Year-wise Plan
+                            </h2>
+                        </div>
+
+                        <span
+                            id="planningYearCount"
+                            class="small-tag"
+                        >
+                            0 Years
+                        </span>
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Project Year</th>
+
+                                    <th>Planned Work</th>
+
+                                    <th>Planned Expenditure</th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="dashboardPlanningBody">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CURRENT PROGRESS -->
+
+                <div class="content-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                CURRENT MONITORING
+                            </p>
+
+                            <h2>
+                                Latest Progress
+                            </h2>
+
+                        </div>
+
+                        <button
+                            id="updateProgressButton"
+                            class="primary-btn small-btn"
+                            onclick="openProgressModal()"
+                        >
+                            + Update Progress
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="latestProgressArea"
+                        class="latest-progress-area"
+                    >
+
+                        <div class="empty-small">
+                            No monthly progress has been recorded yet.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- YEAR SELECTION -->
+
+                <div class="content-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                YEAR MONITORING
+                            </p>
+
+                            <h2>
+                                Project Years
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="year-buttons" id="yearButtons">
+
+                    </div>
+
+
+                    <div
+                        id="selectedYearArea"
+                        class="selected-year-area"
+                    >
+
+                        <div class="empty-small">
+                            Select a project year to view monthly updates.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CREATE PROJECT PAGE
+        ================================================== -->
+
+        <section
+            id="createPage"
+            class="page"
+        >
+
+            <div class="page-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        NEW PROJECT
+                    </p>
+
+                    <h2>
+                        Create Infrastructure Project
+                    </h2>
+
+                    <p class="page-description">
+                        Enter the project details and yearly plan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="projectForm"
+                class="content-card"
+            >
+
+                <!-- BASIC DETAILS -->
+
+                <div class="form-section">
+
+                    <div class="section-heading">
+
+                        <h3>
+                            Project Details
+                        </h3>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group full-width">
+
+                            <label>
+                                Project Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="projectName"
+                                placeholder="Enter project name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Project Type
+                            </label>
+
+                            <select
+                                id="projectType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select project type
+                                </option>
+
+                                <option value="Irrigation">
+                                    Irrigation
+                                </option>
+
+                                <option value="Road">
+                                    Road
+                                </option>
+
+                                <option value="Bridge">
+                                    Bridge
+                                </option>
+
+                                <option value="Building">
+                                    Major Building
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="projectLocation"
+                                placeholder="Enter project location"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Total Planned Budget (₹ Crore)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="totalBudget"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="e.g. 2000"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="startDate"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="endDate"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full-width">
+
+                            <label>
+                                Description
+                                <span class="optional">
+                                    Optional
+                                </span>
+                            </label>
+
+                            <textarea
+                                id="projectDescription"
+                                rows="3"
+                                placeholder="Brief description of the project"
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- YEARLY PLAN -->
+
+                <div
+                    id="planningSection"
+                    class="form-section hidden"
+                >
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <h3>
+                                Year-wise Planning
+                            </h3>
+
+                            <p>
+                                Enter planned work and expenditure
+                                for every project year.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="createYearCount"
+                            class="small-tag"
+                        >
+                            0 Years
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="createPlanningTable"
+                        class="table-wrapper"
+                    >
+
+                    </div>
+
+
+                    <div class="budget-summary">
+
+                        <div>
+                            <span>
+                                Entire Planned Budget
+                            </span>
+
+                            <strong id="createTotalBudget">
+                                ₹ 0.00 Cr
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Year-wise Planned Expenditure
+                            </span>
+
+                            <strong id="createYearlyBudget">
+                                ₹ 0.00 Cr
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Remaining to Allocate
+                            </span>
+
+                            <strong id="createRemainingBudget">
+                                ₹ 0.00 Cr
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SAVE -->
+
+                <div
+                    id="createActions"
+                    class="form-actions hidden"
+                >
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        onclick="resetCreateForm()"
+                    >
+                        Clear
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Save & Create Project
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- CREATED PROJECT MESSAGE -->
+
+            <div
+                id="createdProjectBox"
+                class="content-card success-created hidden"
+            >
+
+                <div class="created-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <p class="eyebrow">
+                        PROJECT CREATED
+                    </p>
+
+                    <h3 id="createdProjectName">
+                    </h3>
+
+                    <p>
+                        The project has been saved.
+                        You can now open its dashboard.
+                    </p>
+
+                    <button
+                        id="viewCreatedProject"
+                        class="primary-btn"
+                    >
+                        View Project Dashboard →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PROJECTS PAGE
+        ================================================== -->
+
+        <section
+            id="projectsPage"
+            class="page"
+        >
+
+            <div class="page-header">
+                <div>
+
+                    <p class="eyebrow">
+                        PROJECTS
+                    </p>
+
+                    <h2>
+                        Your Projects
+                    </h2>
+
+                    <p class="page-description">
+                        Projects created by you will appear here.
+                    </p>
+
+                </div>
+
+                <div class="header-actions">
+
+                    <button
+                        class="secondary-btn"
+                        onclick="exportBackup()"
+                    >
+                        ⬇ Export Backup
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        onclick="document.getElementById('importFile').click()"
+                    >
+                        ⬆ Import Backup
+                    </button>
+
+                    <input
+                        type="file"
+                        id="importFile"
+                        accept=".json,application/json"
+                        class="hidden"
+                        onchange="importBackup(event)"
+                    >
+
+                    <button
+                        class="primary-btn"
+                        onclick="showPage('createPage')"
+                    >
+                        + Create Project
+                    </button>
+
+                </div>
+
+            </div>
+            <div class="projects-toolbar">
+
+                <input
+                    type="text"
+                    id="projectSearch"
+                    placeholder="Search by name, location or description"
+                >
+
+                <select id="projectTypeFilter">
+                    <option value="">All Types</option>
+                    <option value="Irrigation">Irrigation</option>
+                    <option value="Road">Road</option>
+                    <option value="Bridge">Bridge</option>
+                    <option value="Building">Major Building</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <select id="projectStatusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="Ahead of Target">Ahead of Target</option>
+                    <option value="Target Achieved">Target Achieved</option>
+                    <option value="Behind Target">Behind Target</option>
+                </select>
+
+                <button
+                    type="button"
+                    class="secondary-btn small-btn"
+                    onclick="clearProjectFilters()"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+
+            <div
+                id="projectsList"
+                class="projects-list"
+            >
+
+                <!-- Empty until a project is actually created -->
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PROGRESS MODAL
+    ====================================================== -->
+
+    <div
+        id="progressModal"
+        class="modal-overlay"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        MONTHLY UPDATE
+                    </p>
+
+                    <h2>
+                        Update Progress
+                    </h2>
+
+                </div>
+
+                <button
+                    class="close-btn"
+                    onclick="closeProgressModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="progressForm">
+
+                <div class="form-group">
+
+                    <label>
+                        Reporting Month
+                    </label>
+
+                    <input
+                        type="month"
+                        id="updateMonth"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Monthly Work Progress (%)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="actualWork"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        placeholder="e.g. 4.50"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Monthly Expenditure (₹ Crore)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="actualExpenditure"
+                        min="0"
+                        step="0.01"
+                        placeholder="e.g. 25.50"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        onclick="closeProgressModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Save Update
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+        <!-- =====================================================
+         EDIT PROJECT MODAL
+    ====================================================== -->
+
+    <div
+        id="editProjectModal"
+        class="modal-overlay"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <div>
+                    <p class="eyebrow">
+                        EDIT PROJECT
+                    </p>
+                    <h2>
+                        Project Details
+                    </h2>
+                </div>
+
+                <button
+                    class="close-btn"
+                    onclick="closeEditProject()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <form id="editProjectForm">
+
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="editProjectName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Project Type</label>
+                    <select id="editProjectType" required>
+                        <option value="Irrigation">Irrigation</option>
+                        <option value="Road">Road</option>
+                        <option value="Bridge">Bridge</option>
+                        <option value="Building">Major Building</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="editProjectLocation" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Description
+                        <span class="optional">Optional</span>
+                    </label>
+                    <textarea id="editProjectDescription" rows="3"></textarea>
+                </div>
+
+                <p class="page-description">
+                    Dates, budget and the year-wise plan cannot be edited.
+                    To change them, create a new project.
+                </p>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        onclick="closeEditProject()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div
+        id="toast"
+        class="toast"
+    >
+        <span id="toastMessage"></span>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0"></script>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+
+</html>
+
